@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI uzunlukParaTxt;
     public TextMeshProUGUI genislikParaTxt;
 
+    public Image tasImage;
+    public Image odunImage;
+    public Image paraImage;
+
     public AraSahneYoneticisi araSahneYoneticisi;
 
     public Coco coco;
@@ -36,8 +40,12 @@ public class GameManager : MonoBehaviour
     private bool cocoAktifMi;
     public bool cocoAktifMi2;
 
+    public float toplamaAlaniArtisi;
     public SpriteRenderer karakter;
     public Sprite pembe;
+
+    public Camera mainCamera;
+
     private void Start()
     {
         odunTxt.text = odunEsya.esyaSayisi.ToString();
@@ -59,11 +67,14 @@ public class GameManager : MonoBehaviour
             if (!cocoAktifMi)
             {
                 cocoToplayabilirMi = true;
-                coco.HedefeIlerle();
+                coco.toplamaMesafesi = 3f;
+                coco.HedefeIlerle(coco.HedefObjeBelirle());
                 cocoVeri.veriSayisi = 0;
                 cocoIstenenVeri.veriSayisi = 10; // simdilik gecici onlem
                 cocoAktifMi = true;
 
+                coco.LevelUpUI();
+                SesYoneticisi.orn.Oynat("level");
             }
             else
             {
@@ -71,6 +82,10 @@ public class GameManager : MonoBehaviour
                 cocoIstenenVeri.veriSayisi = 10;
                 coco.hiz += 2;
                 coco.hasar += 2;
+                coco.ToplamaAlaniArttir(toplamaAlaniArtisi);
+
+                coco.LevelUpUI();
+                SesYoneticisi.orn.Oynat("level");
             }
 
         }
@@ -128,6 +143,21 @@ public class GameManager : MonoBehaviour
     //}
 
 
+    public Vector3 ToplanabilireHedefBelirle(Esya esya)
+    {
+        if (esya.nitelik == Esya.EsyaNiteligi.odun)
+        {
+            return mainCamera.ScreenToWorldPoint(odunImage.transform.position);
+        }
+        else if(esya.nitelik== Esya.EsyaNiteligi.tas)
+        {
+            return mainCamera.ScreenToWorldPoint(tasImage.transform.position);
+        }
+
+        return mainCamera.ScreenToWorldPoint(paraImage.transform.position);
+    }
+
+
     public void ParaArttir(int miktar)
     {
         para.esyaSayisi += miktar;
@@ -145,7 +175,9 @@ public class GameManager : MonoBehaviour
         GunKontrol();
         if (cocoToplayabilirMi)
         {
-            coco.HedefeIlerle();
+            coco.toplamaMesafesi = 3f;
+            coco.ToplamaHiziniAyarla();
+            coco.HedefeIlerle(coco.HedefObjeBelirle());
 
         }
     }

@@ -37,7 +37,7 @@ public class GridYoneticisi : MonoBehaviour
         TileMapiGuncelle();
     }
 
-    public void TileMapiGuncelle()
+    public void TileMapiGuncelle() // her kareye yeni mahsuller olusturuyor
     {
         for (int i = 0; i < genislik.veriSayisi; i++)
         {
@@ -48,7 +48,7 @@ public class GridYoneticisi : MonoBehaviour
         }
     }
 
-    private void KareyiGuncelle(int i, int j)
+    private void KareyiGuncelle(int i, int j) //koordinattaki kara icin rasgele mahsul olusturuyor
     {
         //int tileID = grid.Get(i, j);
         //if (tileID == -1)

@@ -103,7 +103,7 @@ MonoBehaviour:
   currentHealth: 0
   isDead: 0
   cerceve: {fileID: 5785223025965202110}
-  tasCevher: {fileID: 1139353931706178980, guid: 073b6d9840fdd7c488dbaab1b9889f54, type: 3}
+  tasCevher: {fileID: 5574109930228933950, guid: 9c977a5e6b254ca47bc2df18ce925ae4, type: 3}
   dagilma: 0.8
   cocoVeri: {fileID: 11400000, guid: 047d8a6bc057ed54697aa43c6245c479, type: 2}
 --- !u!61 &5785223025679216336

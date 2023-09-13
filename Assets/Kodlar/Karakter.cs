@@ -20,8 +20,10 @@ public class Karakter : MonoBehaviour
 
     public int yuzununYonu = 1;
 
+    public int yukariMi = 0;
 
     public Animator anim;
+    public Animator kazmaAnim;
 
     bool hareketEdiyorMu = false;
 
@@ -41,6 +43,16 @@ public class Karakter : MonoBehaviour
         Hareket();
 
         //Dondur();
+
+        if (hareketEdiyorMu)
+        {
+
+            SesYoneticisi.orn.Oynat("yurume");
+
+        }else
+        {
+            SesYoneticisi.orn.Durdur("yurume");
+        }
     }
 
     void Hareket()
@@ -54,11 +66,23 @@ public class Karakter : MonoBehaviour
         if (yonX != 0.0f)
         {
             anim.SetBool("xVarMi", true);
+
+            yukariMi = 0;
         }
         else
         {
             anim.SetBool("xVarMi", false);
 
+        }
+
+
+        if (yonY > 0.0f)
+        {
+            yukariMi = 1;
+        }
+        else if (yonY < -0.0f)
+        {
+            yukariMi = -1;
         }
 
         if (yonX == 0.0f && yonY == 0.0f)
@@ -72,6 +96,9 @@ public class Karakter : MonoBehaviour
 
         anim.SetBool("hareket", hareketEdiyorMu);
         anim.SetInteger("yonu", yuzununYonu);
+
+        kazmaAnim.SetInteger("yukariMi", yukariMi);
+        kazmaAnim.SetInteger("yuzununYonu", yuzununYonu);
 
         XhiziniKur(hareketHizi * yonX);
         YhiziniKur(hareketHizi * yonY);

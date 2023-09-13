@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1376f7165135ad14f8696a9507b6cac3, type: 3}
   m_Name: Odun
   m_EditorClassIdentifier: 
-  esyaSayisi: 0
+  esyaSayisi: 148
   nitelik: 1

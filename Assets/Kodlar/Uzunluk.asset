@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd4efe0b612da94e821b4a1f2cc1169, type: 3}
   m_Name: Uzunluk
   m_EditorClassIdentifier: 
-  veriSayisi: 2
+  veriSayisi: 5

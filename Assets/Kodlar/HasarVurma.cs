@@ -17,6 +17,10 @@ public class HasarVurma : MonoBehaviour
 
     public float hasar = 10f;
 
+    public Animator anim;
+
+    Kaynak hedefTut;
+
     void Update()
     {
         Hasar();
@@ -53,10 +57,15 @@ public class HasarVurma : MonoBehaviour
 
                     //sesYonetim.Oynat("vurma");
 
-                    hedef.TakeDamage(hasar);
-                    //anim.SetBool("vur", true);
+                    //hedef.TakeDamage(hasar);
+                    SesYoneticisi.orn.Oynat("vurma");
 
-                    //vurabilirMi = false; // animasyon icin kullanilacak
+                    hedefTut = hedef;   // animasyondan sonra vurmasi icin hedef objeyi tutuyor
+
+                    anim.SetBool("vur", true);
+
+                    vurabilirMi = false; // animasyon icin kullanilacak
+
                 }
 
             }
@@ -65,6 +74,21 @@ public class HasarVurma : MonoBehaviour
                 hedef.CerceveKapa();
             }
         }
+
+        if (hitCollider != null && hitCollider.gameObject.tag == "toplanabilir")
+        {
+            hitCollider.GetComponent<Toplanabilir>().EsyayiAl();
+        }
         
+    }
+
+    public void VurAnim() //Vurma animasyonu bitince hedefe hasar veriyor ve karakterin tekrar vurabilme iznini veriyor
+    {
+        hedefTut.TakeDamage(hasar);
+
+        anim.SetBool("vur", false);
+        vurabilirMi = true;
+        SesYoneticisi.orn.Durdur("vurma");
+
     }
 }

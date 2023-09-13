@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Coco : MonoBehaviour
 {
+
     public GameManager gameManager;
 
     public Transform bahce;
 
     private Transform hedef;
     public float hiz = 2f;
+
+    private float hizTutucu=3f;
 
     List<Transform> childs = new List<Transform>();
 
@@ -27,11 +30,19 @@ public class Coco : MonoBehaviour
 
     public Transform karakter;
 
+    public GameObject toplamaEfekt;
+
+    public GameObject lvlUpUI;
+
+    public float toplamaMesafesi = 0f;
+
     public List<Kaynak> kaynakListesi = new List<Kaynak>();
  
     private void Start()
     {
-        KaraktereIlerle();
+        //KaraktereIlerle();
+        HedefeIlerle(karakter);
+
     }
 
     private void Update()
@@ -39,65 +50,90 @@ public class Coco : MonoBehaviour
 
         if (hareketEdiyorMu)
         {
-            float distanceCovered = (Time.time - baslangicZamani) * hiz; // Kat edilen mesafe
             if (hedef == null)
             {
-                hedef = HedefObjeBelirle();
+                //hedef = HedefObjeBelirle();
+                Debug.Log("hedef null");
+                HedefeIlerle(HedefObjeBelirle());
             }
-
-            float journeyFraction = distanceCovered / Vector3.Distance(baslangicPozisyonu, hedef.position); // Kat edilen mesafenin toplam yol ile oraný
-
-            transform.position = Vector3.Lerp(baslangicPozisyonu, hedef.position, journeyFraction); // Hareket ettirme
-
-            if (journeyFraction >= 1f)
+            else
             {
-                hareketEdiyorMu = false;
 
-                if (!gameManager.cocoToplayabilirMi)
+
+                Vector3 hedefKonum = new Vector3(hedef.position.x, hedef.position.y + toplamaMesafesi, hedef.position.z); // missing transform hatasi
+
+                float distanceCovered = (Time.time - baslangicZamani) * hiz; // Kat edilen mesafe
+
+                float journeyFraction = distanceCovered / Vector3.Distance(baslangicPozisyonu, hedefKonum); // Kat edilen mesafenin toplam yol ile oraný
+
+                transform.position = Vector3.Lerp(baslangicPozisyonu, hedefKonum, journeyFraction); // Hareket ettirme
+
+                if (journeyFraction >= 1f)
                 {
-                    //if (Time.time - lastDamageTime >= damageInterval)
-                    //{
-                        KaraktereIlerle();
+                    hareketEdiyorMu = false;
+
+                    if (!gameManager.cocoToplayabilirMi || (kaynakListesi.Count==0 && childs.Count==0))
+                    {
+
+                        HedefeIlerle(karakter);
+
+
+                        //if (Time.time - lastDamageTime >= damageInterval)
+                        //{
+                            //KaraktereIlerle();
 
 
 
-                    //    lastDamageTime = Time.time; // Son hasar zamanýný güncelle
-                    //}
+                        //    lastDamageTime = Time.time; // Son hasar zamanýný güncelle
+                        //}
+                    }
+
                 }
-
-                HedefeHasarVer(); // Hedefe vardi, altindakilere hasar verirr
             }
         }
 
-        if (hedef == null && gameManager.cocoToplayabilirMi)
-        {
-            HedefeIlerle();
-        }
 
-        if (gameManager.cocoToplayabilirMi)
+        else if (gameManager.cocoToplayabilirMi)
         {
+
+            //if (hedef == null)
+            //{
+            //    HedefeIlerle(HedefObjeBelirle());
+            //}
+
 
             if (hasarVarMi)
             {
+                toplamaEfekt.GetComponent<SpriteRenderer>().enabled = true;
+                SesYoneticisi.orn.Oynat("coco");
+
                 if (Time.time - lastDamageTime >= damageInterval)
                 {
 
-                    for (int i = 0; i < kaynakListesi.Count; i++)
+                    for (int i = 0; i < kaynakListesi.Count; i++) // neden tek seferede buyun kaynaklara hasar vermiyor ?
                     {
 
                         kaynakListesi[i].TakeDamage(hasar);
-
+                        Debug.Log(i);
 
                     }
 
                     lastDamageTime = Time.time; // Son hasar zamanýný güncelle
                 }
+
+                if (kaynakListesi.Count == 0)
+                {
+                    hasarVarMi = false;
+                    toplamaEfekt.GetComponent<SpriteRenderer>().enabled = false;
+                    SesYoneticisi.orn.Durdur("coco");
+
+
+                    HedefeIlerle(HedefObjeBelirle());
+
+                }
+
             }
 
-            if (kaynakListesi.Count == 0)
-            {
-                hasarVarMi = false;
-            }
         }
 
 
@@ -106,11 +142,14 @@ public class Coco : MonoBehaviour
 
     }
 
-    private Transform HedefObjeBelirle()
+    public Transform HedefObjeBelirle()
     {
+        childs.Clear();
+
         foreach (Transform child in bahce)
         {
-            childs.Add(child);
+            if(child !=null)
+                childs.Add(child);
 
         }
 
@@ -120,36 +159,55 @@ public class Coco : MonoBehaviour
 
             return randomObject;
         }
-        return null;
+
+        toplamaMesafesi = 0; // coco toplama mesafesi kadar yukari kalkmasin diye
+        hizTutucu = hiz;
+        hiz = 3f;
+        //KaraktereIlerle();
+        return karakter;
     }
 
-    public void HedefeIlerle()
+    public void HedefeIlerle(Transform hedef)
     {
         baslangicPozisyonu = transform.position;
-        this.hedef = HedefObjeBelirle();
+        this.hedef = hedef;
         baslangicZamani = Time.time;
         hareketEdiyorMu = true;
     }
 
-    public void HedefeHasarVer()
+    public void ToplamaHiziniAyarla()
     {
-        hasarVarMi = true;
-
-
+        hiz = hizTutucu;
     }
 
-    public void KaraktereIlerle()
+    public void ToplamaAlaniArttir(float miktar)
     {
-        baslangicPozisyonu = transform.position;
-        this.hedef = karakter;
-        baslangicZamani = Time.time;
-        hareketEdiyorMu = true;
+        toplamaEfekt.transform.localScale = new Vector3(toplamaEfekt.transform.localScale.x + miktar, toplamaEfekt.transform.localScale.y, toplamaEfekt.transform.localScale.z);
     }
+
+    //public void HedefeHasarVer()
+    //{
+    //    hasarVarMi = true;
+
+    //    Debug.Log("hassar");
+    //}
+
+    //public void KaraktereIlerle()
+    //{
+    //    hizTutucu = hiz;
+    //    hiz = 3f;
+    //    baslangicPozisyonu = transform.position;
+    //    this.hedef = karakter;
+    //    baslangicZamani = Time.time;
+    //    hareketEdiyorMu = true;
+    //}
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Kaynak kaynakObjesi = collision.GetComponent<Kaynak>();
         if (kaynakObjesi != null)
         {
+            hasarVarMi = true;
+
             kaynakListesi.Add(kaynakObjesi); // Kaynak objesini listeye ekle
         }
     }
@@ -163,4 +221,16 @@ public class Coco : MonoBehaviour
         }
     }
 
+
+    public void LevelUpUI()
+    {
+        lvlUpUI.SetActive(true);
+
+        Invoke("DestroyLvlUp", 2f);
+    }
+
+    private void DestroyLvlUp()
+    {
+        lvlUpUI.SetActive(false);
+    }
 }
