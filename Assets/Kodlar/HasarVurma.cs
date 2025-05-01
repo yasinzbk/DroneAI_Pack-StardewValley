@@ -77,7 +77,7 @@ public class HasarVurma : MonoBehaviour
 
         if (hitCollider != null && hitCollider.gameObject.tag == "toplanabilir")
         {
-            hitCollider.GetComponent<Toplanabilir>().EsyayiAl();
+            hitCollider.GetComponent<Toplanabilir>()?.EsyayiAl();
         }
         
     }
